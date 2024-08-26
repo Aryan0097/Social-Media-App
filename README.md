@@ -27,7 +27,7 @@ This project is a social media application built using Spring and Spring Boot. T
 
 <br>
 
-<h3>Frontend will be added soon</h3><br>
+<h3>Frontend will be added soon...</h3><hr><br>
 <h2>Getting Started</h2>
 
 
