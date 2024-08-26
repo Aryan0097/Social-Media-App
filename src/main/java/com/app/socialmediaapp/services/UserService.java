@@ -3,6 +3,7 @@ package com.app.socialmediaapp.services;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -11,6 +12,7 @@ import com.app.socialmediaapp.repository.CommentRepository;
 import com.app.socialmediaapp.repository.LikeRepository;
 import com.app.socialmediaapp.repository.PostRepository;
 import com.app.socialmediaapp.repository.UserRepository;
+import com.app.socialmediaapp.responses.UserResponse;
 
 @Service
 public class UserService {
@@ -28,8 +30,15 @@ public class UserService {
         this.postRepository = postRepository;
     }
 
-    public List<User> getAllUsers(){
-        return userRepository.findAll();
+    public List<UserResponse> getAllUsers(){
+        List<User> users = userRepository.findAll();
+        return users.stream()
+            .map(user -> new UserResponse(
+                user.getId(),
+                user.getUsername(),
+                user.getImage()
+            ))
+            .collect(Collectors.toList());
     }
 
     public User createUser(User user){
@@ -48,7 +57,7 @@ public class UserService {
     }
 
     public User getUserByUsername(String username){
-        return userRepository.findByUsername(username).orElse(null);
+        return userRepository.findByUsername(username);
     }
 
     public User updateUserById(long userId, User newUser){

@@ -16,4 +16,10 @@ public class UserResponse {
         this.image = user.getImage();
         this.username = user.getUsername();
     }
+
+    public UserResponse(Long id, String username, int image) {
+        this.id = id;
+        this.username = username;
+        this.image = image;
+    }
 }
