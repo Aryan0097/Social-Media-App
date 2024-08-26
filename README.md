@@ -19,11 +19,11 @@ This project is a social media application built using Spring and Spring Boot. T
 
   <strong>Spring Boot </strong><br>
   <strong>Spring Security </strong><br>
-  <strong>Spring Data JPA </strong> br>
+  <strong>Spring Data JPA </strong> <br>
   <strong>Spring Web </strong> <br>
   <strong>Hibernate </strong> <br>
   <strong>Maven </strong> <br>
-  <strong>MySQL </strong>.
+  <strong>MySQL </strong>
 
 <br>
 
