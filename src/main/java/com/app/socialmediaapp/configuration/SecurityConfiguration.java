@@ -17,6 +17,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
 import com.app.socialmediaapp.security.JWTAuthenticationEntryPoint;
+
+import static org.springframework.security.config.Customizer.withDefaults;
 import com.app.socialmediaapp.security.JWTAuthenticationFilter;
 import com.app.socialmediaapp.services.UserDetailsServiceImplementation;
 
@@ -69,16 +71,18 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
-                .cors()   
-                .and()
-                .csrf().disable()   
-                .exceptionHandling().authenticationEntryPoint(handler).and()  
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()       
-                .authorizeHttpRequests()
-                .requestMatchers("/auth/**").permitAll() 
-                .requestMatchers(HttpMethod.GET,"/posts").permitAll() 
-                .requestMatchers(HttpMethod.GET,"/comments").permitAll()
-                .anyRequest().authenticated(); 
+                .cors(withDefaults())
+                .csrf(customizer -> customizer.disable())
+                .exceptionHandling(handling -> handling.authenticationEntryPoint(handler))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(request -> request
+                	    .requestMatchers("/auth/**").permitAll()
+                	    .requestMatchers(HttpMethod.GET, "/likes").permitAll()
+                	    .requestMatchers(HttpMethod.GET, "/comments").permitAll()
+                	    .requestMatchers("/posts/**").authenticated()  // Ensure that only authenticated users can access posts
+                	    .anyRequest().authenticated()
+                	);
+
 
         httpSecurity.addFilterBefore(JWTAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class); 
         return httpSecurity.build();
