@@ -39,7 +39,7 @@ public class PostController {
     }
 
     @PostMapping
-    public Post createPost(@RequestBody CreatePostRequest newPostrequest) {
+    public PostResponse createPost(@RequestBody CreatePostRequest newPostrequest) {
         return postService.createPost(newPostrequest);
     }
 
@@ -54,7 +54,7 @@ public class PostController {
     }
 
     @PutMapping("/{postId}")
-    public Post updatePostById(@PathVariable Long postId, @RequestBody UpdatePostRequest updatePostRequest) { 
+    public PostResponse updatePostById(@PathVariable Long postId, @RequestBody UpdatePostRequest updatePostRequest) { 
         return postService.updatePostById(postId,updatePostRequest);
     }
 

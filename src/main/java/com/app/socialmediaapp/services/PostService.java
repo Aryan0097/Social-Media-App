@@ -64,7 +64,7 @@ public class PostService {
         return new PostResponse(post,likes,comments);
     }
 
-    public Post createPost(CreatePostRequest newPostRequest) {
+    public PostResponse createPost(CreatePostRequest newPostRequest) {
         User user = userService.getUserById(newPostRequest.getUserId());           
         if(user==null){
             return null;
@@ -76,17 +76,21 @@ public class PostService {
         post.setUser(user);
         post.setCreateDate(new Date());
         System.out.println(newPostRequest.getTitle());
-        return postRepository.save(post);
+        postRepository.save(post);
+        
+        return new PostResponse(post, null, null);
     }
 
-    public Post updatePostById(Long postId, UpdatePostRequest updatePostRequest) {  
+    public PostResponse updatePostById(Long postId, UpdatePostRequest updatePostRequest) {  
         Optional<Post> post = postRepository.findById(postId);
         if(post.isPresent()){
             Post updatePost = post.get();
             updatePost.setText(updatePostRequest.getText());
             updatePost.setTitle(updatePostRequest.getTitle());
             postRepository.save(updatePost);
-            return updatePost;
+            List<LikeResponse> likes = likeService.getAllLikes(Optional.ofNullable(null),Optional.of(postId));
+            List<CommentResponse> comments = commentService.getAllComments(Optional.ofNullable(null), Optional.of(postId));
+            return new PostResponse(updatePost, likes, comments);
         }
         return null;
     }
