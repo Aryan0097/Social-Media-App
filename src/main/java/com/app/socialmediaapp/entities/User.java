@@ -18,6 +18,11 @@ public class User {
 
     private String password;
 
-    private int image;
+    private String imageName;
+    private String imageType;
+    
+    @Lob
+    @Column(columnDefinition = "LONGBLOB")
+    private byte[] imageData;
 
 }

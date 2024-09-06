@@ -1,19 +1,26 @@
 package com.app.socialmediaapp.controllers;
 
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.app.socialmediaapp.entities.User;
 import com.app.socialmediaapp.exceptions.UserNotFoundException;
+import com.app.socialmediaapp.requests.UserRequest;
 import com.app.socialmediaapp.responses.UserResponse;
 import com.app.socialmediaapp.services.UserService;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -38,32 +45,43 @@ public class UserController {
     }
 
     @PostMapping
-    public User createUser(@RequestBody User user) {
+    public UserResponse createUser(@RequestBody User user) {
         System.out.println(user.getUsername());
         return userService.createUser(user);
     }
 
     @GetMapping("/{userId}")
     public UserResponse getUserById(@PathVariable long userId) {
-        User user=userService.getUserById(userId);
-        if(user==null){
+        UserResponse userResponse=userService.getUseResponseById(userId);
+        if(userResponse==null){
             throw new UserNotFoundException();
         }
-        return new UserResponse(user);
+        return userResponse;
+    }
+    
+    @GetMapping("/{userId}/image")
+    public ResponseEntity<byte[]> getImageByUserId(@PathVariable long userId){
+    	User user = userService.getUserById(userId);
+    	byte[] imageFile = user.getImageData();
+    	return ResponseEntity.ok()
+    			.contentType(MediaType.valueOf(user.getImageType()))
+    					.body(imageFile);
     }
 
-    // @GetMapping("/{username}")
-    // public User getUserByUsername(@PathVariable String username) {
-    //     User user=userService.getUserByUsername(username);
-    //     if(user==null){
-    //         throw new UserNotFoundException();
-    //     }
-    //     return user;
-    // }
+//     @GetMapping("/{username}")
+//     public UserResponse getUserByUsername(@PathVariable String username) {
+//         UserResponse userResponse=userService.getUserResponseByUsername(username);
+//         if(userResponse==null){
+//             throw new UserNotFoundException();
+//         }
+//         return userResponse;
+//     }
     
     @PutMapping("/{userId}")
-    public User updateUserById(@PathVariable long userId, @RequestBody User user) {
-        return userService.updateUserById(userId,user);
+    public UserResponse updateUserById(@PathVariable long userId,
+    			@ModelAttribute UserRequest userRequest,
+    			@RequestPart MultipartFile imageFile) throws IOException {
+    	return userService.updateUserById(userId,userRequest,imageFile);
     }
 
     @DeleteMapping("/{userId}")

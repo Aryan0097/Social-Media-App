@@ -1,17 +1,20 @@
 package com.app.socialmediaapp.services;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.app.socialmediaapp.entities.User;
 import com.app.socialmediaapp.repository.CommentRepository;
 import com.app.socialmediaapp.repository.LikeRepository;
 import com.app.socialmediaapp.repository.PostRepository;
 import com.app.socialmediaapp.repository.UserRepository;
+import com.app.socialmediaapp.requests.UserRequest;
 import com.app.socialmediaapp.responses.UserResponse;
 
 @Service
@@ -34,18 +37,16 @@ public class UserService {
         List<User> users = userRepository.findAll();
         return users.stream()
             .map(user -> new UserResponse(
-                user.getId(),
-                user.getUsername(),
-                user.getImage()
+                user
             ))
             .collect(Collectors.toList());
     }
 
-    public User createUser(User user){
+    public UserResponse createUser(User user){
         // System.out.println(user.getUsername());
-        return userRepository.save(user);
+        return new UserResponse(userRepository.save(user));
     }
-
+    
     public User getUserById(Long userId) {
         try {
             // System.out.println("Searching for user with ID: " + userId);
@@ -56,19 +57,33 @@ public class UserService {
         }
     }
 
+    public UserResponse getUseResponseById(Long userId) {
+        try {
+             System.out.println("Searching for user with ID: " + userId);
+        	User user = userRepository.findById(userId).orElse(null);
+            return new UserResponse(user);
+        } catch (Exception e) {
+            e.printStackTrace(); // Print stack trace for debugging
+            return null;
+        }
+    }
+    
     public User getUserByUsername(String username){
         return userRepository.findByUsername(username);
     }
 
-    public User updateUserById(long userId, User newUser){
+    public UserResponse getUserResponseByUsername(String username){
+        return new UserResponse(userRepository.findByUsername(username));
+    }
+
+    public UserResponse updateUserById(long userId, UserRequest newUser, MultipartFile imageFile) throws IOException{
         Optional<User> user = userRepository.findById(userId);
         if(user.isPresent()){
             User updatedUser = user.get();
-            updatedUser.setImage(newUser.getImage());
+
             updatedUser.setUsername(newUser.getUsername());
-            updatedUser.setPassword(newUser.getPassword());
             userRepository.save(updatedUser);
-            return updatedUser;
+            return new UserResponse(updatedUser);
         }
         return null;
     }
