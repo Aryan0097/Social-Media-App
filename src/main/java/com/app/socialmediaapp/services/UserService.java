@@ -17,7 +17,6 @@ import com.app.socialmediaapp.repository.LikeRepository;
 import com.app.socialmediaapp.repository.PostRepository;
 import com.app.socialmediaapp.repository.UserRepository;
 import com.app.socialmediaapp.requests.UserRequest;
-import com.app.socialmediaapp.responses.FollowerOrFollowingResponse;
 import com.app.socialmediaapp.responses.UserResponse;
 
 @Service
@@ -105,12 +104,16 @@ public class UserService {
     	userRepository.save(followerUser);
     }
     
-    public List<FollowerOrFollowingResponse> getFollowers(Long userId) {
+    public List<UserResponse> getFollowers(Long userId) {
         return userRepository.findFollowersByUserId(userId);
     }
 
-    public List<FollowerOrFollowingResponse> getFollowing(Long userId) {
+    public List<UserResponse> getFollowing(Long userId) {
         return userRepository.findFollowingByUserId(userId);
+    }
+    
+    public List<UserResponse> searchUsers(String searchString) {
+        return userRepository.searchUsersByUsername(searchString);
     }
 
     // public List<Object> getUserActivityById(Long userId) {

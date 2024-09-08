@@ -7,12 +7,13 @@ import java.util.Set;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.*;
-
-
-//--> *** lombook not used because we use Set so we need to override perfect equals() and hashCode() *** <--//
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "user")
+@Getter
+@Setter
 public class User {
 
     @Id
@@ -29,7 +30,7 @@ public class User {
     @Lob
     @Column(columnDefinition = "LONGBLOB")
     private byte[] imageData;
-    
+
     // A user following many other users
     @ManyToMany
     @JoinTable(
@@ -44,73 +45,12 @@ public class User {
     @ManyToMany(mappedBy = "following")
     @JsonIgnore
     private Set<User> followers = new HashSet<>();
-    
-    // Getters and Setters
-    public Long getId() {
-        return id;
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, username); // Exclude collections
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getImageName() {
-        return imageName;
-    }
-
-    public void setImageName(String imageName) {
-        this.imageName = imageName;
-    }
-
-    public String getImageType() {
-        return imageType;
-    }
-
-    public void setImageType(String imageType) {
-        this.imageType = imageType;
-    }
-
-    public byte[] getImageData() {
-        return imageData;
-    }
-
-    public void setImageData(byte[] imageData) {
-        this.imageData = imageData;
-    }
-
-    public Set<User> getFollowing() {
-        return following;
-    }
-
-    public void setFollowing(Set<User> following) {
-        this.following = following;
-    }
-
-    public Set<User> getFollowers() {
-        return followers;
-    }
-
-    public void setFollowers(Set<User> followers) {
-        this.followers = followers;
-    }
-
-    // Custom equals and hashCode methods
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -118,10 +58,5 @@ public class User {
         User user = (User) o;
         return Objects.equals(id, user.id) &&
                Objects.equals(username, user.username);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, username);
     }
 }

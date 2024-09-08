@@ -1,6 +1,7 @@
 package com.app.socialmediaapp.controllers;
 
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -8,7 +9,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.app.socialmediaapp.entities.User;
 import com.app.socialmediaapp.exceptions.UserNotFoundException;
 import com.app.socialmediaapp.requests.UserRequest;
-import com.app.socialmediaapp.responses.FollowerOrFollowingResponse;
 import com.app.socialmediaapp.responses.UserResponse;
 import com.app.socialmediaapp.services.UserService;
 
@@ -102,16 +102,21 @@ public class UserController {
     
  // Get all followers for a user
     @GetMapping("/{userId}/followers")
-    public ResponseEntity<List<FollowerOrFollowingResponse>> getFollowers(@PathVariable Long userId) {
-        List<FollowerOrFollowingResponse> followers = userService.getFollowers(userId);
+    public ResponseEntity<List<UserResponse>> getFollowers(@PathVariable Long userId) {
+        List<UserResponse> followers = userService.getFollowers(userId);
         return ResponseEntity.ok(followers);
     }
 
     // Get all following for a user
     @GetMapping("/{userId}/following")
-    public ResponseEntity<List<FollowerOrFollowingResponse>> getFollowing(@PathVariable Long userId) {
-        List<FollowerOrFollowingResponse> following = userService.getFollowing(userId);
+    public ResponseEntity<List<UserResponse>> getFollowing(@PathVariable Long userId) {
+        List<UserResponse> following = userService.getFollowing(userId);
         return ResponseEntity.ok(following);
+    }
+    
+    @GetMapping("/search")
+    public List<UserResponse> searchUsers(@RequestParam String search) {
+        return userService.searchUsers(search);
     }
     
     // @GetMapping("/activity/{userId}")

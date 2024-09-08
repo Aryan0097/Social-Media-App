@@ -16,4 +16,11 @@ public class UserResponse {
         this.username = user.getUsername();
     }
 
+
+	public UserResponse(long id, String username) {
+		super();
+		this.id = id;
+		this.username = username;
+	}
+
 }
