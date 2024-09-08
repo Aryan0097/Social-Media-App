@@ -14,6 +14,7 @@ This project is a social media application built using Spring and Spring Boot. T
   Posts: Users can create, view, and delete posts.<br>
   Likes: Users can like posts.<br>
   Comments: Users can comment on posts.<br>
+  Follow: Users can follow other users.<br>
 
 <h2>Technologies Used</h2>
 
