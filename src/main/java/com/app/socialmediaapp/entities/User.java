@@ -8,6 +8,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.*;
 
+
+//--> *** lombook not used because we use Set so we need to override perfect equals() and hashCode() *** <--//
+
 @Entity
 @Table(name = "user")
 public class User {
