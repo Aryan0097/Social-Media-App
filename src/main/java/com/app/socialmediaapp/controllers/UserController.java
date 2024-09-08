@@ -8,6 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.app.socialmediaapp.entities.User;
 import com.app.socialmediaapp.exceptions.UserNotFoundException;
 import com.app.socialmediaapp.requests.UserRequest;
+import com.app.socialmediaapp.responses.FollowerOrFollowingResponse;
 import com.app.socialmediaapp.responses.UserResponse;
 import com.app.socialmediaapp.services.UserService;
 
@@ -87,6 +88,30 @@ public class UserController {
     @DeleteMapping("/{userId}")
     public void deleteUserById(@PathVariable long userId){
         userService.deleteUserById(userId);
+    }
+    
+    @PostMapping("/{follower}/follow/{followee}")
+    public void followUser(@PathVariable Long follower, @PathVariable Long followee) {
+    	userService.followUser(followee, follower);
+    }
+    
+    @PostMapping("/{follower}/unfollow/{followee}")
+    public void unfollowUser(@PathVariable Long follower, @PathVariable Long followee) {
+    	userService.unfollowUser(followee, follower);
+    }
+    
+ // Get all followers for a user
+    @GetMapping("/{userId}/followers")
+    public ResponseEntity<List<FollowerOrFollowingResponse>> getFollowers(@PathVariable Long userId) {
+        List<FollowerOrFollowingResponse> followers = userService.getFollowers(userId);
+        return ResponseEntity.ok(followers);
+    }
+
+    // Get all following for a user
+    @GetMapping("/{userId}/following")
+    public ResponseEntity<List<FollowerOrFollowingResponse>> getFollowing(@PathVariable Long userId) {
+        List<FollowerOrFollowingResponse> following = userService.getFollowing(userId);
+        return ResponseEntity.ok(following);
     }
     
     // @GetMapping("/activity/{userId}")

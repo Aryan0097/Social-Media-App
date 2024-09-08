@@ -6,15 +6,18 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.app.socialmediaapp.entities.User;
+import com.app.socialmediaapp.exceptions.UserNotFoundException;
 import com.app.socialmediaapp.repository.CommentRepository;
 import com.app.socialmediaapp.repository.LikeRepository;
 import com.app.socialmediaapp.repository.PostRepository;
 import com.app.socialmediaapp.repository.UserRepository;
 import com.app.socialmediaapp.requests.UserRequest;
+import com.app.socialmediaapp.responses.FollowerOrFollowingResponse;
 import com.app.socialmediaapp.responses.UserResponse;
 
 @Service
@@ -48,24 +51,12 @@ public class UserService {
     }
     
     public User getUserById(Long userId) {
-        try {
-            // System.out.println("Searching for user with ID: " + userId);
-            return userRepository.findById(userId).orElse(null);
-        } catch (Exception e) {
-            e.printStackTrace(); // Print stack trace for debugging
-            return null;
-        }
+        return userRepository.findById(userId).orElseThrow(()-> new UsernameNotFoundException("User not found with given userid:"+userId));
     }
 
     public UserResponse getUseResponseById(Long userId) {
-        try {
-             System.out.println("Searching for user with ID: " + userId);
-        	User user = userRepository.findById(userId).orElse(null);
-            return new UserResponse(user);
-        } catch (Exception e) {
-            e.printStackTrace(); // Print stack trace for debugging
-            return null;
-        }
+        User user = userRepository.findById(userId).orElseThrow(()-> new UsernameNotFoundException("User not found with given userid:"+userId));
+        return new UserResponse(user);
     }
     
     public User getUserByUsername(String username){
@@ -76,7 +67,7 @@ public class UserService {
         return new UserResponse(userRepository.findByUsername(username));
     }
 
-    public UserResponse updateUserById(long userId, UserRequest newUser, MultipartFile imageFile) throws IOException{
+    public UserResponse updateUserById(long userId, UserRequest newUser, MultipartFile imageFile) throws UsernameNotFoundException{
         Optional<User> user = userRepository.findById(userId);
         if(user.isPresent()){
             User updatedUser = user.get();
@@ -90,6 +81,36 @@ public class UserService {
 
     public void deleteUserById(long userId) {
         userRepository.deleteById(userId);
+    }
+    
+    public void followUser(Long followee, Long follower) {
+    	User followToUser = userRepository.findById(followee).orElseThrow(()-> new UserNotFoundException());
+    	User followerUser = userRepository.findById(follower).orElseThrow(()-> new UserNotFoundException());
+    	
+    	followToUser.getFollowers().add(followerUser);
+    	followerUser.getFollowing().add(followToUser);
+    	
+    	userRepository.save(followToUser);
+    	userRepository.save(followerUser);
+    }
+    
+    public void unfollowUser(Long followee, Long follower) {
+    	User followToUser = userRepository.findById(followee).orElseThrow(()-> new UserNotFoundException());
+    	User followerUser = userRepository.findById(follower).orElseThrow(()-> new UserNotFoundException());
+    	
+    	followToUser.getFollowers().remove(followerUser);
+    	followerUser.getFollowing().remove(followToUser);
+    	
+    	userRepository.save(followToUser);
+    	userRepository.save(followerUser);
+    }
+    
+    public List<FollowerOrFollowingResponse> getFollowers(Long userId) {
+        return userRepository.findFollowersByUserId(userId);
+    }
+
+    public List<FollowerOrFollowingResponse> getFollowing(Long userId) {
+        return userRepository.findFollowingByUserId(userId);
     }
 
     // public List<Object> getUserActivityById(Long userId) {
